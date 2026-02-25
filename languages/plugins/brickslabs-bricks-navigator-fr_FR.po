@@ -1,0 +1,236 @@
+# Translation of Plugins - Bricks Navigator - Development (trunk) in French (France)
+# This file is distributed under the same license as the Plugins - Bricks Navigator - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2022-08-28 22:59:42+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.0-alpha.6\n"
+"Language: fr\n"
+"Project-Id-Version: Plugins - Bricks Navigator - Development (trunk)\n"
+
+#: inc/community.php:262
+msgid "Max Addons Pro"
+msgstr "Max Addons Pro"
+
+#: inc/community.php:168
+msgid "BricksUltimate"
+msgstr "BricksUltimate"
+
+#: inc/community.php:75 inc/thirdpartyplugins.php:86
+msgid "BricksExtras"
+msgstr "BricksExtras"
+
+#: inc/community.php:248
+msgid "Ivan Nugraha"
+msgstr "Ivan Nugraha"
+
+#: inc/community.php:128
+msgid "BricksLabs Facebook Group"
+msgstr "Groupe Facebook BricksLabs"
+
+#: inc/community.php:114
+msgid "BricksLabs"
+msgstr "BricksLabs"
+
+#: inc/community.php:207
+msgid "Discord Chat"
+msgstr "Discussion Discord"
+
+#: inc/community.php:11
+msgid "Community"
+msgstr "Communauté"
+
+#: inc/bricks.php:499
+msgid "YouTube Channel"
+msgstr "Chaîne YouTube"
+
+#: inc/bricks.php:485
+msgid "Facebook Group"
+msgstr "Groupe Facebook"
+
+#: inc/bricks.php:471
+msgid "Forum"
+msgstr "Forum"
+
+#: inc/bricks.php:457
+msgid "Academy"
+msgstr "Académie"
+
+#: inc/bricks.php:443
+msgid "Changelog"
+msgstr "Journal des modifications"
+
+#: inc/bricks.php:429
+msgid "Roadmap"
+msgstr "Feuille de route"
+
+#: inc/bricks.php:414
+msgid "Idea Board"
+msgstr "Tableau d’idées"
+
+#: inc/bricks.php:385
+msgid "License"
+msgstr "Licence"
+
+#: inc/bricks.php:358
+msgid "System Information"
+msgstr "Informations système"
+
+#: inc/bricks.php:331
+msgid "Sidebars"
+msgstr "Colonnes latérales"
+
+#: inc/bricks.php:304
+msgid "Custom Fonts"
+msgstr "Polices personnalisées"
+
+#: inc/bricks.php:293
+msgid "Getting Started in a new tab"
+msgstr "Premiers pas dans un nouvel onglet"
+
+#: inc/bricks.php:277
+msgid "Getting Started"
+msgstr "Premiers pas"
+
+#: inc/bricks.php:260
+msgid "Pages"
+msgstr "Pages"
+
+#: inc/bricks.php:214
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/bricks.php:186
+msgid "Custom Code"
+msgstr "Code personnalisé"
+
+#: inc/bricks.php:159
+msgid "API Keys"
+msgstr "Clés d’API"
+
+#: inc/bricks.php:132
+msgid "Performance"
+msgstr "Performances"
+
+#: inc/bricks.php:105
+msgid "Builder"
+msgstr "Constructeur"
+
+#: inc/bricks.php:78 inc/bricks.php:243
+msgid "Templates"
+msgstr "Modèles"
+
+#: inc/bricks.php:51
+msgid "Builder Access"
+msgstr "Accès constructeur"
+
+#: inc/templates-edit.php:65
+msgid "Edit this Template with Bricks in a new tab"
+msgstr "Modifier ce modèle avec Bricks dans un nouvel onglet"
+
+#: inc/templates-edit.php:50
+msgid "Edit this Template with Bricks"
+msgstr "Modifier ce modèle avec Bricks"
+
+#: inc/pages.php:48
+msgid "View: "
+msgstr "Voir : "
+
+#: inc/pages.php:34
+msgid "Edit this Page"
+msgstr "Modifier cette page"
+
+#: inc/pages.php:11
+msgid "View All Pages"
+msgstr "Voir toutes les pages"
+
+#: inc/pages-edit.php:39
+msgid "Edit this Page with Bricks in a new tab"
+msgstr "Modifier cette page avec Bricks dans un nouvel onglet"
+
+#: inc/pages-edit.php:24
+msgid "Edit this Page with Bricks"
+msgstr "Modifier cette page avec Bricks"
+
+#: inc/bricks.php:401
+msgid "Bricks Settings → License in a new tab"
+msgstr "Réglages Bricks → Licence dans un nouvel onglet"
+
+#: inc/bricks.php:24
+msgid "General"
+msgstr "Général"
+
+#: brickslabs-bricks-navigator.php:120 inc/bricks.php:11
+msgid "Settings"
+msgstr "Réglages"
+
+#: brickslabs-bricks-navigator.php:82
+msgid "Bricks"
+msgstr "Bricks"
+
+#. Author URI of the plugin
+msgid "https://brickslabs.com"
+msgstr "https://brickslabs.com"
+
+#. Author of the plugin
+msgid "Sridhar Katakam"
+msgstr "Sridhar Katakam"
+
+#: inc/bricks.php:374
+msgid "Bricks Settings → System Information in a new tab"
+msgstr "Réglages Bricks → Informations système dans un nouvel onglet"
+
+#: inc/bricks.php:347
+msgid "Bricks Settings → Sidebars in a new tab"
+msgstr "Réglages Bricks → Colonnes latérales dans un nouvel onglet"
+
+#: inc/bricks.php:320
+msgid "Bricks Settings → Custom Fonts in a new tab"
+msgstr "Réglages Bricks → Polices personnalisées dans un nouvel onglet"
+
+#: inc/bricks.php:230
+msgid "Bricks Settings → WooCommerce in a new tab"
+msgstr "Réglages Bricks → WooCommerce dans un nouvel onglet"
+
+#: inc/bricks.php:202
+msgid "Bricks Settings → Custom Code in a new tab"
+msgstr "Réglages Bricks → Code personnalisé dans un nouvel onglet"
+
+#: inc/bricks.php:175
+msgid "Bricks Settings → API Keys in a new tab"
+msgstr "Réglages Bricks → Clés de l’API dans un nouvel onglet"
+
+#: inc/bricks.php:148
+msgid "Bricks Settings → Performance in new tab"
+msgstr "Réglages Bricks → Performance dans un nouvel onglet"
+
+#: inc/bricks.php:121
+msgid "Bricks Settings → Builder in a new tab"
+msgstr "Réglages Bricks → Constructeur dans un nouvel onglet"
+
+#: inc/bricks.php:94
+msgid "Bricks Settings → Templates in a new tab"
+msgstr "Réglages Bricks → Modèles dans un nouvel onglet"
+
+#: inc/bricks.php:69
+msgid "Bricks Settings → Builder Access in a new tab"
+msgstr "Réglages Bricks → Accès au constructeur dans un nouvel onglet"
+
+#: inc/bricks.php:42
+msgid "Bricks Settings → General in a new tab"
+msgstr "Réglages Bricks → Général dans un nouvel onglet"
+
+#. Description of the plugin
+msgid "Adds quick links in the WordPress admin bar for users of Bricks theme."
+msgstr "Ajoute des liens rapides dans la barre d’administration de WordPress pour les utilisateurs et utilisatrices du thème Bricks."
+
+#. Plugin URI of the plugin
+msgid "https://brickslabs.com/bricks-navigator/"
+msgstr "https://brickslabs.com/bricks-navigator/"
+
+#. Plugin Name of the plugin
+msgid "BricksLabs Bricks Navigator"
+msgstr "BricksLabs Bricks Navigator"
