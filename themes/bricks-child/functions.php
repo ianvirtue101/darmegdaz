@@ -44,6 +44,48 @@ add_filter('bricks/builder/i18n', function ($i18n) {
 });
 
 /**
+ * Register 'room' custom post type
+ */
+add_action('init', function () {
+	register_post_type('room', [
+		'labels' => [
+			'name'               => 'Rooms',
+			'singular_name'      => 'Room',
+			'add_new'            => 'Add New Room',
+			'add_new_item'       => 'Add New Room',
+			'edit_item'          => 'Edit Room',
+			'new_item'           => 'New Room',
+			'view_item'          => 'View Room',
+			'search_items'       => 'Search Rooms',
+			'not_found'          => 'No rooms found',
+			'not_found_in_trash' => 'No rooms found in Trash',
+			'all_items'          => 'All Rooms',
+			'menu_name'          => 'Rooms',
+		],
+		'public'       => true,
+		'has_archive'  => false,
+		'show_in_rest' => true,
+		'rewrite'      => ['slug' => 'rooms', 'with_front' => false],
+		'supports'     => ['title', 'thumbnail', 'custom-fields'],
+		'menu_icon'    => 'dashicons-building',
+	]);
+});
+
+/**
+ * Register room meta fields for REST API
+ */
+add_action('init', function () {
+	$meta_args = [
+		'type'         => 'string',
+		'single'       => true,
+		'show_in_rest' => true,
+	];
+
+	register_post_meta('room', '_room_sleeps', $meta_args);
+	register_post_meta('room', '_room_beds', $meta_args);
+});
+
+/**
  * MCP: Custom REST endpoints to read/write Bricks page data
  *
  * Endpoints:
