@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(# Find the actual php.ini used by Local find \"\"/c/Users/ianvi/AppData/Roaming/Local/lightning-services/php-8.2.27+1\"\" -name \"\"php.ini\"\")",
+      "Read(//c/Users/ianvi/Local Sites/darmegdaz/**)",
+      "Read(//c/Users/ianvi/AppData/Roaming/Local/run/**)"
+    ]
+  }
+}
