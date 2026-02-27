@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "wordpress": {
+      "url": "https://localhost:3000",
+      "description": "WordPress MCP server for darmegdaz.local",
+      "tools": [
+        "wp_get_pages",
+        "wp_get_page",
+        "wp_update_page",
+        "wp_get_bricks",
+        "wp_update_bricks",
+        "wp_get_posts",
+        "wp_get_option",
+        "wp_get_menus",
+        "health"
+      ]
+    }
+  },
+  "project": "darmegdaz",
+  "localUrl": "https://darmegdaz.local"
+}
