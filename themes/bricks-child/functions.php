@@ -192,6 +192,22 @@ add_action('rest_api_init', function () {
 			// update_post_meta will serialize arrays automatically
 			update_post_meta($id, $meta_key, $bricks);
 
+			// Bust all cache layers so the frontend reflects the new content immediately
+			// 1. WordPress object cache (LiteSpeed drop-in caches post_meta in memory)
+			wp_cache_delete($id, 'post_meta');
+			clean_post_cache($id);
+
+			// 2. LiteSpeed page cache
+			if (class_exists('\LiteSpeed\Purge')) {
+				\LiteSpeed\Purge::purge_post($id);
+			}
+			do_action('litespeed_purge_post', $id);
+
+			// 3. WP Fastest Cache
+			if (function_exists('wpfc_clear_post_cache_by_id')) {
+				wpfc_clear_post_cache_by_id($id);
+			}
+
 			return rest_ensure_response([
 				'success'  => true,
 				'page_id'  => $id,
