@@ -217,3 +217,123 @@ add_action('rest_api_init', function () {
 	]);
 
 });
+
+/**
+ * Output HotelRoom schema for individual room pages (CPT: room)
+ */
+add_action('wp_head', function () {
+	if (!is_singular('room')) {
+		return;
+	}
+
+	$post_id = get_the_ID();
+	$url     = get_permalink($post_id);
+
+	// Room-specific data keyed by post ID
+	$room_data = [
+		526 => [
+			'name'        => 'The Green Room',
+			'description' => 'A peaceful double room (~18m²) overlooking the Tessaout Valley with private bathroom, traditional Moroccan breakfast included, and views of the High Atlas Mountains.',
+			'bed'         => 'Double',
+			'occupancy'   => 2,
+			'image'       => '/wp-content/uploads/2025/11/Green-Room-Hero.avif',
+		],
+		527 => [
+			'name'        => 'The Red Room',
+			'description' => 'A warm, intimate room with rich textiles, mountain views, and private bathroom. Breakfast included.',
+			'bed'         => 'Double',
+			'occupancy'   => 2,
+			'image'       => '/wp-content/uploads/2025/11/Red-Room.avif',
+		],
+		528 => [
+			'name'        => 'The Silver Room',
+			'description' => 'Light and airy with silver accents, valley views, and a private bathroom. Breakfast included.',
+			'bed'         => 'Double',
+			'occupancy'   => 2,
+			'image'       => '/wp-content/uploads/2025/11/Silver-Room.avif',
+		],
+		529 => [
+			'name'        => 'Room 3 Green',
+			'description' => 'A spacious family-friendly room with garden access, private bathroom, and breakfast included.',
+			'bed'         => 'Double',
+			'occupancy'   => 3,
+			'image'       => '/wp-content/uploads/2025/11/Room-3-Green.avif',
+		],
+		530 => [
+			'name'        => 'The Purple Room',
+			'description' => 'Bold colours and traditional craftsmanship meet modern comfort. Private bathroom and breakfast included.',
+			'bed'         => 'Double',
+			'occupancy'   => 2,
+			'image'       => '/wp-content/uploads/2025/11/purple-room.avif',
+		],
+	];
+
+	$data = $room_data[$post_id] ?? null;
+	if (!$data) {
+		return;
+	}
+
+	$site_url = home_url();
+
+	$schema = [
+		'@context'        => 'https://schema.org',
+		'@type'           => 'HotelRoom',
+		'name'            => $data['name'],
+		'description'     => $data['description'],
+		'url'             => $url,
+		'image'           => $site_url . $data['image'],
+		'bed'             => [
+			'@type'        => 'BedDetails',
+			'typeOfBed'    => $data['bed'],
+			'numberOfBeds' => 1,
+		],
+		'occupancy'       => [
+			'@type' => 'QuantitativeValue',
+			'value' => $data['occupancy'],
+		],
+		'amenityFeature'  => [
+			['@type' => 'LocationFeatureSpecification', 'name' => 'Private Bathroom', 'value' => true],
+			['@type' => 'LocationFeatureSpecification', 'name' => 'Valley Views', 'value' => true],
+			['@type' => 'LocationFeatureSpecification', 'name' => 'Free WiFi', 'value' => true],
+			['@type' => 'LocationFeatureSpecification', 'name' => 'Breakfast Included', 'value' => true],
+			['@type' => 'LocationFeatureSpecification', 'name' => 'Daily Housekeeping', 'value' => true],
+		],
+		'containedInPlace' => [
+			'@type' => 'BedAndBreakfast',
+			'@id'   => 'https://darmegdaz.com/#dar-megdaz',
+		],
+	];
+
+	echo "\n<script type=\"application/ld+json\">\n" . wp_json_encode($schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n</script>\n";
+}, 5);
+
+/**
+ * Add meta description for room pages (only if Rank Math/Yoast haven't set one)
+ */
+add_action('wp_head', function () {
+	if (!is_singular('room')) {
+		return;
+	}
+
+	// Skip if Rank Math or Yoast is handling meta descriptions
+	if (defined('RANK_MATH_VERSION') || defined('WPSEO_VERSION')) {
+		return;
+	}
+
+	$post_id = get_the_ID();
+
+	$descriptions = [
+		526 => 'The Green Room at Dar Megdaz — a peaceful double room with valley views, private bathroom, and traditional Moroccan breakfast. Book your Atlas Mountains retreat.',
+		527 => 'The Red Room at Dar Megdaz — warm textiles, mountain views, and Moroccan hospitality in the High Atlas. Private bathroom and breakfast included.',
+		528 => 'The Silver Room at Dar Megdaz — light and airy with valley views, private bathroom, and daily breakfast. Your Atlas Mountains escape.',
+		529 => 'Room 3 Green at Dar Megdaz — spacious family-friendly room with garden access in the High Atlas. Private bathroom and breakfast included.',
+		530 => 'The Purple Room at Dar Megdaz — bold colours meet traditional craftsmanship. Private bathroom, valley views, and breakfast included.',
+	];
+
+	$desc = $descriptions[$post_id] ?? '';
+	if ($desc) {
+		echo '<meta name="description" content="' . esc_attr($desc) . '" />' . "\n";
+		echo '<meta property="og:description" content="' . esc_attr($desc) . '" />' . "\n";
+		echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
+	}
+}, 1);
