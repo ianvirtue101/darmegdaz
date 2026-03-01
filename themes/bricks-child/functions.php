@@ -337,3 +337,65 @@ add_action('wp_head', function () {
 		echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
 	}
 }, 1);
+// LodgingBusiness Schema (structured data for Google)
+function darmegdaz_lodging_schema() {
+    if (!is_front_page()) return;
+
+    $schema = array(
+        "@context"    => "https://schema.org",
+        "@type"       => "LodgingBusiness",
+        "name"        => "Dar Megdaz Guesthouse",
+        "description" => "Traditional Amazigh guesthouse in the High Atlas Mountains of Morocco, offering authentic cultural experiences and trekking adventures.",
+        "url"         => home_url("/"),
+        "address"     => array(
+            "@type"           => "PostalAddress",
+            "streetAddress"   => "Megdaz Village",
+            "addressLocality" => "Megdaz",
+            "addressRegion"   => "Azilal Province",
+            "addressCountry"  => "MA",
+        ),
+        "geo" => array(
+            "@type"     => "GeoCoordinates",
+            "latitude"  => 31.6,
+            "longitude" => -6.4,
+        ),
+        "aggregateRating" => array(
+            "@type"       => "AggregateRating",
+            "ratingValue" => "9.8",
+            "bestRating"  => "10",
+            "reviewCount" => "70",
+        ),
+        "priceRange"         => "EUR 24-30",
+        "currenciesAccepted" => "EUR,MAD",
+        "paymentAccepted"    => "Cash, Credit Card",
+        "amenityFeature" => array(
+            array("@type" => "LocationFeatureSpecification", "name" => "Free Breakfast", "value" => true),
+            array("@type" => "LocationFeatureSpecification", "name" => "Free WiFi", "value" => true),
+            array("@type" => "LocationFeatureSpecification", "name" => "Terrace", "value" => true),
+            array("@type" => "LocationFeatureSpecification", "name" => "Heating", "value" => true),
+        ),
+        "checkinTime"  => "14:00",
+        "checkoutTime" => "11:00",
+        "image"        => wp_get_attachment_url(483),
+        "sameAs"       => array(
+            "https://www.booking.com/hotel/ma/dar-megdaz.html",
+        ),
+    );
+
+    echo '<script type="application/ld+json">' . "\n";
+    echo wp_json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    echo "\n</script>\n";
+}
+add_action('wp_head', 'darmegdaz_lodging_schema', 5);
+// Sticky Mobile Booking CTA (visible only on mobile, slides up after scroll)
+function darmegdaz_sticky_mobile_cta() {
+    $booking_url = 'https://www.booking.com/hotel/ma/dar-megdaz.html';
+    echo '<div id="mobile-booking-cta" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1C140C;border-top:2px solid #D4A96A;padding:0.75rem 1.25rem;box-shadow:0 -4px 20px rgba(0,0,0,0.3);">';
+    echo '<div style="display:flex;align-items:center;justify-content:space-between;max-width:600px;margin:0 auto;gap:1rem;">';
+    echo '<div style="flex:1;"><div style="color:#F5F0E8;font-size:0.95rem;font-weight:700;">From &euro;24/night</div><div style="color:#C4B8A8;font-size:0.75rem;">Breakfast included</div></div>';
+    echo '<a href="' . esc_url($booking_url) . '" target="_blank" rel="noopener" style="display:inline-block;background:#D4A96A;color:#1C140C;font-weight:700;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.05em;padding:0.7rem 1.5rem;border-radius:4px;text-decoration:none;white-space:nowrap;">Book Now</a>';
+    echo '</div></div>';
+    echo '<style>@media(max-width:768px){#mobile-booking-cta{display:block!important}body{padding-bottom:70px}}</style>';
+    echo '<script>(function(){var c=document.getElementById("mobile-booking-cta");if(!c)return;c.style.transition="transform 0.3s ease";c.style.transform="translateY(100%)";window.addEventListener("scroll",function(){c.style.transform=(window.pageYOffset>300)?"translateY(0)":"translateY(100%)"})})();</script>';
+}
+add_action('wp_footer', 'darmegdaz_sticky_mobile_cta');

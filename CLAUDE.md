@@ -59,6 +59,15 @@ Five main pages (by ID):
 
 Other pages: Coming Soon (7), Our Impact (51).
 
+### Bricks Templates
+
+| ID  | Type   | Title            | Meta Key                    |
+| --- | ------ | ---------------- | --------------------------- |
+| 257 | Footer | Dar Megdaz Footer| `_bricks_page_footer_2`     |
+| 39  | Header | Header           | `_bricks_page_header_2`     |
+
+**Important**: Templates use different meta keys than pages. Pages use `_bricks_page_content_2`, but header/footer templates use `_bricks_page_header_2` / `_bricks_page_footer_2`.
+
 ### Room Pages (Custom Post Type `room`)
 
 | ID  | Room         | Slug         | Image file           | Sleeps | Beds                |
@@ -70,6 +79,20 @@ Other pages: Coming Soon (7), Our Impact (51).
 | 530 | Purple Room  | purple-room  | purple-room.avif     | 4-5    | 5 singles           |
 
 Room custom meta: `_room_sleeps`, `_room_beds`.
+
+Room pages are built programmatically via PHP scripts (not the visual editor). Current reference scripts in WP root:
+- `fix_green_room_v16.php` — Green Room template with responsive breakpoints + 50% text increase
+- `build_all_rooms_v2.php` — All 4 other rooms using same v16 template
+
+Hero image attachment IDs: 483 (Green), 485 (Red), 486 (Silver), 487 (Room 3 Green), 488 (Purple)
+
+### Navigation
+
+Menu ID 2, slug `header-menu`. Hierarchical structure:
+- About
+- Rooms ▾ (dropdown: Green Room, Red Room, Silver Room, Room 3 Green, Purple Room, View All Rooms)
+- Explore Megdaz
+- Contact
 
 ## SEO
 
@@ -212,7 +235,24 @@ $new_id = add_post_meta($post_id, $meta_key, $elements, true);
 - Authenticated via WordPress nonce/cookie or Basic Auth
 - Implemented in `themes/bricks-child/functions.php`
 
-### 8. Animations — `_interactions` (scroll-triggered)
+### 8. Responsive Breakpoints
+
+Bricks uses `setting_key:breakpoint_key` format for responsive overrides:
+
+```
+desktop            — 1280px (BASE, no suffix)
+tablet_landscape   — 1024px
+mobile_landscape   — 812px
+tablet_portrait    — 768px  (primary tablet)
+mobile_portrait    — 640px  (primary mobile)
+mobile_portrait_small — 480px
+```
+
+Example: `'_direction:tablet_portrait' => 'column'` generates `@media (max-width: 768px) { flex-direction: column; }`
+
+Always add overrides for at least `tablet_portrait` and `mobile_portrait` on layout-critical elements.
+
+### 9. Animations — `_interactions` (scroll-triggered)
 
 Bricks uses Animate.css + IntersectionObserver. Add to any element's settings:
 
@@ -227,7 +267,7 @@ Bricks uses Animate.css + IntersectionObserver. Add to any element's settings:
 
 Types: `fadeIn`, `fadeInUp`, `fadeInLeft`, `fadeInRight`, `slideInUp`, `zoomIn`, etc.
 
-### 9. Custom CSS — `_cssCustom` (hover effects)
+### 10. Custom CSS — `_cssCustom` (hover effects)
 
 **IMPORTANT**: `%root%` only works in the Bricks visual editor (replaced via JS). For programmatic use, substitute the actual selector `#brxe-{elementId}`:
 
@@ -239,7 +279,7 @@ function css(string $id, string $rules): string {
 '_cssCustom' => css($myId, '%root% { transition: transform 0.3s; } %root%:hover { transform: translateY(-6px); }')
 ```
 
-### 10. Image element format
+### 11. Image element format
 
 ```php
 'name' => 'image',
@@ -250,7 +290,7 @@ function css(string $id, string $rules): string {
 ]
 ```
 
-### 11. Design system — confirmed colour palette
+### 12. Design system — confirmed colour palette
 
 ```php
 $cream      = clr('#F5F0E8', 'clrcream',  'Cream');
@@ -264,6 +304,27 @@ $dark_body  = clr('#4A3728', 'clrdkbody', 'Dark Body');
 ```
 
 Typography: Playfair Display (headings, italic), Lato (body/labels).
+
+### 13. Button link format — MUST include `type` key
+
+```php
+// WRONG — renders <a> with NO href
+'link' => ['url' => '/contact/']
+
+// CORRECT — internal link
+'link' => ['type' => 'internal', 'postId' => 53]
+
+// CORRECT — external link
+'link' => ['type' => 'external', 'url' => 'https://booking.com/...', 'newTab' => true]
+```
+
+### 14. Running PHP scripts
+
+Standalone PHP binary lacks mysqli. Run scripts through the web server:
+```bash
+curl -sk "https://darmegdaz.local/script.php"
+```
+For scripts with self-fetch verification that may timeout, split the verification into a separate step.
 
 Additional notes:
 
