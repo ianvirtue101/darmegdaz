@@ -1,109 +1,110 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-Dar Megdaz is a WordPress site built with the **Bricks Builder** page builder theme (v2.0.1). The repository tracks the `wp-content` directory. The site runs locally via **Local by Flywheel** at `darmegdaz.local`.
+**Dar Megdaz** is a guesthouse website for a family-run accommodation in Megdaz village, High Atlas Mountains, Morocco. The site is built on WordPress with Bricks Builder and serves as the primary booking and discovery channel for the property.
+
+- **Local URL:** https://darmegdaz.local
+- **Live URL:** https://darmegdaz.com
+- **Host:** Hostinger
+- **Stack:** WordPress, Bricks Builder 2.0.1, TranslatePress (FR active)
+- **Repo scope:** `wp-content/` only — WordPress core and database are not tracked
+
+---
 
 ## Architecture
 
 ### Bricks Child Theme (`themes/bricks-child/`)
 
-This is the primary custom code location. Key components:
+Primary custom code location. Never modify the parent `themes/bricks/` — changes are lost on updates.
 
-- **functions.php** — Style enqueuing, custom element registration, builder i18n strings, and MCP REST API endpoints
-- **elements/** — Custom Bricks elements (extend `\Bricks\Element`). Elements use PHP for frontend rendering and Vue.js templates for the builder panel
-- **style.css** — Child theme stylesheet (only loaded on frontend, not in builder)
+- **functions.php** — Style enqueuing, custom element registration, MCP REST endpoints
+- **elements/** — Custom Bricks elements (PHP + Vue.js for builder panel)
+- **style.css** — Frontend-only stylesheet (not loaded in builder)
 
-### MCP REST API Integration
+### MCP REST API (`functions.php`)
 
-Custom REST endpoints in the child theme allow AI tools to read/write Bricks page content:
+Custom endpoints that allow AI agents to read and write Bricks page layouts:
 
-- `GET /wp-json/mcp/v1/bricks/{id}` — Retrieve Bricks element tree for a page
-- `POST /wp-json/mcp/v1/bricks/{id}` — Update Bricks element tree (body: `{ "bricks": [...] }`)
-- Requires `edit_posts` capability (authenticated requests)
-- Bricks content is stored in post meta key `_bricks_page_content_2` (serialized PHP array)
+- `GET /wp-json/mcp/v1/bricks/{id}` — Returns Bricks element tree for a page
+- `POST /wp-json/mcp/v1/bricks/{id}` — Writes Bricks element tree (body: `{ "bricks": [...] }`)
+- Requires `edit_posts` capability
+- Bricks data lives in post meta key `_bricks_page_content_2` (serialized array)
+- MCP Node.js server runs at `http://localhost:3000` — must be running for agent writes
 
-### Bricks Parent Theme (`themes/bricks/`)
+### Key Plugins
 
-The commercial Bricks Builder theme. Do not modify files here — changes are overwritten on theme updates.
+| Plugin          | Purpose                    |
+| --------------- | -------------------------- | --- |
+| Rank Math SEO   | SEO meta, schema, sitemaps |
+| TranslatePress  | Multilingual (FR active)   |
+| LiteSpeed Cache | Performance/caching        |
+| Fluent Forms    | Contact forms              |
+| Google Site Kit | Analytics                  |
+| WP Mail SMTP    | Transactional email        | k   |
 
-### Plugins (21 installed)
+Do not modify plugin files directly.
 
-Notable plugins: LiteSpeed Cache, Fluent Forms, Rank Math SEO, TranslatePress (multilingual), Google Site Kit, WP Mail SMTP. Plugin code should not be modified directly.
+---
 
-## Development Patterns
+## Page Registry
 
-- **Custom elements** are registered via `\Bricks\Elements::register_element()` at priority 11 on the `init` hook
-- Element files go in `themes/bricks-child/elements/` and are listed in the `$element_files` array in functions.php
-- Follow WordPress coding standards (hooks, escaping, `WP_Error` for REST errors)
-- REST endpoints use closures registered on `rest_api_init`
+| ID  | Page               | Slug               | Notes                                     |
+| --- | ------------------ | ------------------ | ----------------------------------------- |
+| 43  | Home               | home               | Hero video, testimonials, Mohamed section |
+| 47  | Stay at Dar Megdaz | stay-at-dar-megdaz | Rooms overview, booking CTA               |
+| 49  | Explore Megdaz     | explore-megdaz     | Hiking, activities                        |
+| 45  | About              | about              | Mohamed's story                           |
+| 53  | Contact            | contact            | Fluent Form                               |
+| 51  | Our Impact         | our-impact         | Community/sustainability                  |
+| 7   | Coming Soon        | coming-soon        | Legacy page, unpublish candidate          |
 
-## Git Convention
+---
 
-- The `.gitignore` excludes `uploads/`, `cache/`, `.env`, `.log`, and OS files
-- Only wp-content is tracked; WordPress core and database are not in the repo
+## Design System
 
-## Pages
+### Colours
 
-Five main pages (by ID):
+```css
+--color-earth: #8b4513; /* Terracotta — primary */
+--color-sand: #d4a96a; /* Atlas sand — secondary */
+--color-dusk: #2c1810; /* Deep background */
+--color-mist: #f5f0e8; /* Light background */
+--color-atlas: #4a7c59; /* Mountain green — accent */
+--color-white: #fdfaf5; /* Off-white */
+```
 
-| ID  | Page               | Slug                 |
-| --- | ------------------ | -------------------- |
-| 43  | Home               | `home`               |
-| 47  | Stay at Dar Megdaz | `stay-at-dar-megdaz` |
-| 49  | Explore Megdaz     | `explore-megdaz`     |
-| 45  | About              | `about`              |
-| 53  | Contact            | `contact`            |
+### Typography
 
-Other pages: Coming Soon (7), Our Impact (51).
+```css
+--font-display: "Playfair Display", serif; /* Headlines */
+--font-body: "Lato", sans-serif; /* Body */
+--font-accent: "Cormorant Garamond", serif; /* Pull quotes */
+```
 
-### Bricks Templates
+### Tone & Voice
 
-| ID  | Type   | Title            | Meta Key                    |
-| --- | ------ | ---------------- | --------------------------- |
-| 257 | Footer | Dar Megdaz Footer| `_bricks_page_footer_2`     |
-| 39  | Header | Header           | `_bricks_page_header_2`     |
+- Evocative, unhurried, immersive
+- Speak to travellers seeking authenticity over comfort
+- Avoid tourist-brochure language ("stunning views", "unique experience")
+- Mohamed's voice is warm, personal, direct — preserve it in all copy
 
-**Important**: Templates use different meta keys than pages. Pages use `_bricks_page_content_2`, but header/footer templates use `_bricks_page_header_2` / `_bricks_page_footer_2`.
-
-### Room Pages (Custom Post Type `room`)
-
-| ID  | Room         | Slug         | Image file           | Sleeps | Beds                |
-| --- | ------------ | ------------ | -------------------- | ------ | ------------------- |
-| 526 | Green Room   | green-room   | Green-Room-Hero.avif | 2      | 1 double            |
-| 527 | Red Room     | red-room     | Red-Room.avif        | 1-2    | 2 singles           |
-| 528 | Silver Room  | silver-room  | Silver-Room.avif     | 2-3    | 1 double + 1 single |
-| 529 | Room 3 Green | room-3-green | Room-3-Green.avif    | 3      | 3 singles           |
-| 530 | Purple Room  | purple-room  | purple-room.avif     | 4-5    | 5 singles           |
-
-Room custom meta: `_room_sleeps`, `_room_beds`.
-
-Room pages are built programmatically via PHP scripts (not the visual editor). Current reference scripts in WP root:
-- `fix_green_room_v16.php` — Green Room template with responsive breakpoints + 50% text increase
-- `build_all_rooms_v2.php` — All 4 other rooms using same v16 template
-
-Hero image attachment IDs: 483 (Green), 485 (Red), 486 (Silver), 487 (Room 3 Green), 488 (Purple)
-
-### Navigation
-
-Menu ID 2, slug `header-menu`. Hierarchical structure:
-- About
-- Rooms ▾ (dropdown: Green Room, Red Room, Silver Room, Room 3 Green, Purple Room, View All Rooms)
-- Explore Megdaz
-- Contact
+---
 
 ## SEO
 
-The site uses **Rank Math SEO** (not Yoast). Rank Math stores meta in post meta:
+Plugin: **Rank Math SEO**
 
-- `rank_math_title` — custom SEO title
-- `rank_math_description` — meta description
-- `rank_math_focus_keyword` — primary keyword
-- `rank_math_schema` — schema markup (JSON-LD, serialized)
+Rank Math post meta keys:
 
-### Current SEO meta (set via `update_post_meta`)
+- `rank_math_title` — SEO title
+- `rank_math_description` — Meta description
+- `rank_math_focus_keyword` — Primary keyword
+- `rank_math_schema` — Schema markup (JSON-LD, serialized)
+
+### Current SEO Meta
 
 | Page (ID)    | Focus Keyword                   | SEO Title                                                                   |
 | ------------ | ------------------------------- | --------------------------------------------------------------------------- |
@@ -113,327 +114,173 @@ The site uses **Rank Math SEO** (not Yoast). Rank Math stores meta in post meta:
 | About (45)   | Mohamed Megdaz host High Atlas  | About Dar Megdaz — Mohamed Megdaz, Your Host in the High Atlas              |
 | Contact (53) | book Dar Megdaz guesthouse      | Contact Dar Megdaz — Book Your Guesthouse Stay in Morocco                   |
 
+### Schema Priority
+
+Implement `LodgingBusiness` schema on the homepage with name, description, URL, address, geo coordinates, Mohamed as contact point, and booking.com URL.
+
+---
+
+## External Listings & Booking Links
+
+### Dar Megdaz on OTAs
+
+| Platform    | URL                                                                 | Rating     | Reviews |
+| ----------- | ------------------------------------------------------------------- | ---------- | ------- |
+| Booking.com | `https://www.booking.com/hotel/ma/dar-megdaz.html`                  | 9.7/10     | 66      |
+| Airbnb      | `https://www.airbnb.com/rooms/1061615005740004557`                  | —          | —       |
+| TripAdvisor | `https://www.tripadvisor.com/Hotel_Review-g33419032-d33414881-Reviews-Dar_Megdaz-Megdaz_Beni_Mellal_Khenifra.html` | — | — |
+
+### Key Contact Info
+
+- **WhatsApp**: `https://wa.me/212667983588` (Mohamed)
+- **Instagram**: `@dar_megdaz`
+- **Languages spoken**: English, French, Amazigh (Berber), Arabic
+
+### Pricing (current)
+
+- From €24/night (all rooms), breakfast included
+- EUR 24–30 range in schema.org structured data
+- No per-room pricing differentiation on the website yet
+
+---
+
+## Competitor Analysis (March 2026)
+
+### Competitor 1: Gite Megdaz Ouhadouch
+
+- **Booking.com**: `https://www.booking.com/hotel/ma/gite-megdaz.fr.html`
+- **Rating**: 7.9/10 (74 reviews) — more reviews than Dar Megdaz but lower score
+- **Price**: From ~$30 USD/night (~€28)
+- **Rooms**: 4 bedrooms, sleeps 11 max. Room types: Quadruple (14m², 4 twins), Double (6m², 1 full), Family (16m², 5 twins)
+- **Bathrooms**: Shared only
+- **Amenities**: Free WiFi, free parking, shared kitchen, sun terrace, garden, picnic area, pet-friendly, free cancellation
+- **Listed on**: Booking.com, Agoda, Airbnb, Lodging World, Casai
+- **Languages**: Arabic, French (no English)
+- **Strengths**: Higher review volume, multi-platform presence, free cancellation, pet-friendly, shared kitchen for budget travellers
+- **Weaknesses**: Lower rating, no English, shared bathrooms, no website, no storytelling/brand
+
+### Competitor 2: Gite D'etape Ait Ali Nito Assounfou
+
+- **Booking.com**: `https://www.booking.com/hotel/ma/gite-d-etape-ait-ali-nito-assounfou.html`
+- **Rating**: 9.5/10 (6 reviews) — high but tiny sample
+- **Price**: From ~$28 USD/night (~€26)
+- **Rooms**: 7 bedrooms, sleeps 20 max. Family rooms (10–12m², 4–5 twins), Triple rooms (9m²)
+- **Bathrooms**: Shared (1 total for the property)
+- **Amenities**: Free parking, shared kitchen, sun terrace, 24-hour front desk, paid shuttle service, à la carte breakfast, pet-friendly, contactless check-in, restaurant on-site, CCTV security
+- **Listed on**: Booking.com, Skyscanner, VillaSahara, A-Hotel, Lonely Planet
+- **Languages**: Arabic, French (no English)
+- **Strengths**: Lonely Planet feature, restaurant (dinner available), shuttle service, larger capacity for groups, 24-hour front desk
+- **Weaknesses**: Only 6 reviews, shared bathroom (1 for 20 guests), no website, no English, non-refundable policy
+
+### Dar Megdaz Competitive Advantages
+
+1. **Highest rating in the area** — 9.7 vs 9.5 and 7.9
+2. **Private en-suite bathrooms** — neither competitor offers this
+3. **English-speaking host** — critical for international market
+4. **Custom branded website** — competitors rely entirely on OTAs
+5. **Compelling brand story** — Mohamed's narrative, Amazigh heritage, "hidden village"
+6. **Detailed trek offerings** — Explore page with route descriptions (unique)
+7. **Schema markup & SEO** — structured data for organic search
+8. **On-site guest testimonials** — builds trust before OTA redirect
+
+---
+
+## Site Audit — Current Content & Gaps (March 2026)
+
+### What the site currently has
+
+- **Home**: Full-screen hero, 4 value propositions, host bio, 6 guest reviews, Booking.com 9.8 badge
+- **Stay page**: 5 room cards (text-only, no pricing), booking section linking to Booking.com
+- **Room pages**: 5-section template (hero, about, what's included, cross-sell, CTA) built programmatically
+- **Contact**: WhatsApp CTA, Booking.com link, Fluent Forms contact form
+- **About**: Mohamed's story, Amazigh culture, invitation CTA
+- **Explore**: 6 trek categories, featured "Lost Valley Route" with details
+- **Header**: Logo, nav with Rooms dropdown, pricing badge on room pages ("From €24/night")
+- **Footer**: Links, Instagram, WhatsApp, Booking.com rating badge
+- **Mobile sticky CTA**: Scroll-triggered "From €24/night · Book Now" → Booking.com
+
+### Booking paths on the site
+
+1. Home hero "Book Your Stay" → Stay page
+2. Room page "Book This Room" → **Contact page** (friction point)
+3. Stay page "Stay in Megdaz" → Booking.com
+4. Contact page WhatsApp link → wa.me
+5. Contact page "Book Online" → Booking.com
+6. Footer "Stay" link → Booking.com
+7. Mobile sticky CTA → Booking.com
+8. Fluent Forms on Contact page
+
+### Critical gaps identified
+
+1. **"Book This Room" CTAs go to Contact page** — adds friction for ready-to-book visitors
+2. **No per-room pricing** — all rooms show "From €24" with no differentiation
+3. **Only 1 photo per room** — no gallery (competitors show multiple on OTAs)
+4. **No "How to Get Here" section** — remote village with no directions/map/transport info
+5. **No dinner/meal info** — reviews mention dinners but site only says "breakfast included"
+6. **Missing Airbnb link** — Stay page mentions Airbnb but doesn't link to actual listing
+7. **No consolidated amenities page** — facilities scattered across room pages
+8. **Languages spoken not displayed** — English fluency is a major advantage, not highlighted
+9. **No cancellation policy visible** — competitors show this
+10. **No seasonal guide** — when to visit, weather, what to pack
+11. **About page duplicate content** — "House That Built Itself" repeats Amazigh hospitality copy
+12. **Purple Room occupancy mismatch** — CLAUDE.md says sleeps 4-5, room page says 2
+
+---
+
+## Improvement Roadmap
+
+### Phase 1 — Quick Wins (no new content from Mohamed needed)
+
+| #  | Task                                                                 | Impact | Effort |
+| -- | -------------------------------------------------------------------- | ------ | ------ |
+| 1  | Fix "Book This Room" CTAs → Booking.com (or WhatsApp w/ room name)   | High   | Low    |
+| 2  | Add per-room pricing to Stay page room cards and room pages          | High   | Low    |
+| 3  | Add Airbnb link to Stay page and footer                              | Medium | Low    |
+| 4  | Add "How to Get Here" section (Contact page or new section)          | High   | Medium |
+| 5  | Add dinner/meal info ("Traditional dinner available on request ~€X") | Medium | Low    |
+| 6  | Display languages spoken on About + Contact pages                    | Medium | Low    |
+| 7  | Fix About page duplicate content                                     | Low    | Low    |
+| 8  | Fix Purple Room occupancy (update to match actual capacity)          | Low    | Low    |
+| 9  | Add TripAdvisor link to footer alongside Booking.com badge           | Low    | Low    |
+
+### Phase 2 — Content Enhancements (need photos/info from Mohamed)
+
+| #  | Task                                                                 | Impact    | Effort |
+| -- | -------------------------------------------------------------------- | --------- | ------ |
+| 10 | Photo gallery per room (4–6 photos: bed, bathroom, view, details)    | Very High | Medium |
+| 11 | Shared spaces gallery (terrace, garden, dining area, rooftop)        | High      | Medium |
+| 12 | Seasonal guide section (best times, weather, packing tips)           | Medium    | Medium |
+| 13 | Consolidated amenities/facilities page or section                    | Medium    | Medium |
+| 14 | Cancellation policy info visible on site                             | Medium    | Low    |
+
+### Phase 3 — Competitive Positioning (strategic/ongoing)
+
+| #  | Task                                                                 | Impact | Effort  |
+| -- | -------------------------------------------------------------------- | ------ | ------- |
+| 15 | Push for more Booking.com reviews (surpass competitor's 74)          | High   | Ongoing |
+| 16 | Encourage TripAdvisor reviews from guests                            | Medium | Ongoing |
+| 17 | Pursue Lonely Planet or travel blog features                         | High   | Hard    |
+| 18 | Consider pet-friendly policy (both competitors allow pets)           | Low    | Low     |
+| 19 | Add shuttle/transfer service from Marrakech (like Assounfou does)    | High   | Medium  |
+
+---
+
 ## Local Environment
 
-- **PHP binary**: `C:/Users/ianvi/AppData/Roaming/Local/lightning-services/php-8.2.27+1/bin/win64/php.exe`
-- **php.ini** (with mysqli): `C:/Users/ianvi/AppData/Roaming/Local/run/1xSoHjwAw/conf/php/php.ini`
-- **WordPress root**: `C:/Users/ianvi/Local Sites/darmegdaz/app/public`
-- Run PHP scripts against WP: `"<PHP>" -c "<PHPINI>" script.php`
-- Bootstrap WordPress in a script with `require_once __DIR__ . '/wp-load.php';` from the WP root
-- WP-CLI is not pre-installed; download `wp-cli.phar` to WP root when needed, run with the PHP binary and php.ini above
+- **PHP binary:** `C:/Users/ianvi/AppData/Roaming/Local/lightning-services/php-8.2.27+1/bin/win64/php.exe`
+- **php.ini:** `C:/Users/ianvi/AppData/Roaming/Local/run/1xSoHjwAw/conf/php/php.ini`
+- **WordPress root:** `C:/Users/ianvi/Local Sites/darmegdaz/app/public`
+- **Run PHP against WP:** `"<PHP>" -c "<PHPINI>" script.php`
+- **Bootstrap WP in scripts:** `require_once __DIR__ . '/wp-load.php';` from WP root
+- **WP-CLI:** Not pre-installed — download `wp-cli.phar` to WP root when needed
 
-## Bricks Builder — Critical Technical Requirements (v2.0.1)
+---
 
-These rules were confirmed by code inspection of `themes/bricks/includes/assets.php` and live debugging.
+## Development Rules
 
-### 1. Required post meta for Bricks to render
-
-Every post/page using Bricks **must** have these two meta keys, or Bricks silently falls back to the theme's block editor template:
-
-```php
-update_post_meta($id, '_bricks_editor_mode',  'bricks');
-update_post_meta($id, '_bricks_template_type', 'content');
-```
-
-Content is stored in: `_bricks_page_content_2` (serialised PHP array).
-
-### 2. Colour object format — ALL colours must be arrays with a `hex` key
-
-Bricks' CSS generator (`assets.php` line 692) only reads `$color['hex']`. A plain hex string like `'#FFFFFF'` has no `['hex']` key and produces **no CSS output** — the colour is silently ignored.
-
-**WRONG** (produces no CSS):
-
-```php
-'_background' => ['color' => '#4A7C59'],
-'_typography' => ['color' => '#FFFFFF'],
-```
-
-**CORRECT**:
-
-```php
-'_background' => ['color' => ['hex' => '#4A7C59', 'id' => 'clrsage', 'name' => 'Sage Green']],
-'_typography' => ['color' => ['hex' => '#FFFFFF', 'id' => 'clrwhite', 'name' => 'White']],
-```
-
-The `id` and `name` keys are optional but recommended for consistency. Use a helper:
-
-```php
-function clr(string $hex, string $id = '', string $name = ''): array {
-    $obj = ['hex' => $hex];
-    if ($id)   $obj['id']   = $id;
-    if ($name) $obj['name'] = $name;
-    return $obj;
-}
-```
-
-This applies to **every** colour value: `_background.color`, `_background.imageOverlay.color`, `_typography.color`, `_border.*.color`, `_shapeDividers[].fill`, etc.
-
-### 3. Shape dividers — Bricks 2.0.1 format
-
-The old Bricks 1.x keys `shapeTop` / `shapeBottom` are silently ignored. Use `_shapeDividers` array:
-
-```php
-'_shapeDividers' => [
-    [
-        'id'             => 'sd_unique_id',    // unique string
-        'shape'          => 'wave-brush',       // shape slug
-        'fill'           => clr('#F5F0E8', 'clrcream', 'Cream'),  // colour object
-        'bottom'         => '0rem',             // OR 'top' => '0rem'
-        'height'         => '8rem',
-        'flipHorizontal' => true,               // optional
-    ],
-],
-```
-
-### 4. Cache busting after programmatic meta updates
-
-The LiteSpeed object-cache drop-in (`wp-content/object-cache.php`) caches `get_post_meta()` in memory. After any `update_post_meta()` / `delete_post_meta()` / `add_post_meta()` call, bust all layers:
-
-```php
-wp_cache_delete($id, 'post_meta');
-clean_post_cache($id);
-if (class_exists('\LiteSpeed\Purge')) {
-    \LiteSpeed\Purge::purge_post($id);
-}
-do_action('litespeed_purge_post', $id);
-do_action('litespeed_purge_all');
-```
-
-This is already implemented in the MCP REST POST handler in `themes/bricks-child/functions.php`.
-
-### 5. Element `children` array — REQUIRED on every element
-
-Every element MUST include a `children` key, even leaf elements (`'children' => []`). Bricks uses this array to build the render tree. Without it, child content is silently dropped from HTML output.
-
-```php
-// WRONG — heading won't render
-['id' => 'h1', 'name' => 'heading', 'parent' => 'c1', 'settings' => [...]]
-
-// CORRECT
-['id' => 'h1', 'name' => 'heading', 'parent' => 'c1', 'children' => [], 'settings' => [...]]
-```
-
-### 6. Force DB write with delete + add
-
-`update_post_meta()` returns `false` (no-op) if the serialised value is identical to what is already stored. To guarantee a write, use:
-
-```php
-delete_post_meta($post_id, $meta_key);
-$new_id = add_post_meta($post_id, $meta_key, $elements, true);
-```
-
-### 6. CSS generation modes
-
-- **`cssLoading = 'file'`**: Bricks writes `wp-content/uploads/bricks/css/post-{id}.min.css` on `save_post`. This file must exist and be fresh for styles to load.
-- **Inline mode** (default / not set): CSS is generated on every page load via `Assets::generate_inline_css()`, reading directly from the `_bricks_page_content_2` meta. No CSS file needed.
-- Both modes require colour objects (rule 2 above) — plain strings produce empty CSS either way.
-
-### 7. MCP REST API (local proxy at localhost:3000)
-
-- `GET  http://localhost:3000/wp_get_bricks/{id}` — returns the element array
-- `POST http://localhost:3000/wp_update_bricks/{id}` — body **must** be `{"bricks": [...]}` (not a raw array)
-- Authenticated via WordPress nonce/cookie or Basic Auth
-- Implemented in `themes/bricks-child/functions.php`
-
-### 8. Responsive Breakpoints
-
-Bricks uses `setting_key:breakpoint_key` format for responsive overrides:
-
-```
-desktop            — 1280px (BASE, no suffix)
-tablet_landscape   — 1024px
-mobile_landscape   — 812px
-tablet_portrait    — 768px  (primary tablet)
-mobile_portrait    — 640px  (primary mobile)
-mobile_portrait_small — 480px
-```
-
-Example: `'_direction:tablet_portrait' => 'column'` generates `@media (max-width: 768px) { flex-direction: column; }`
-
-Always add overrides for at least `tablet_portrait` and `mobile_portrait` on layout-critical elements.
-
-### 9. Animations — `_interactions` (scroll-triggered)
-
-Bricks uses Animate.css + IntersectionObserver. Add to any element's settings:
-
-```php
-'_interactions' => [[
-    'id' => 'anim-1', 'trigger' => 'enterView', 'action' => 'startAnimation',
-    'target' => 'self', 'animationType' => 'fadeInUp',
-    'animationDuration' => '0.8s', 'animationDelay' => '0.2s',
-    'runOnce' => true,   // play once only
-]]
-```
-
-Types: `fadeIn`, `fadeInUp`, `fadeInLeft`, `fadeInRight`, `slideInUp`, `zoomIn`, etc.
-
-### 10. Custom CSS — `_cssCustom` (hover effects)
-
-**IMPORTANT**: `%root%` only works in the Bricks visual editor (replaced via JS). For programmatic use, substitute the actual selector `#brxe-{elementId}`:
-
-```php
-function css(string $id, string $rules): string {
-    return str_replace('%root%', "#brxe-$id", $rules);
-}
-
-'_cssCustom' => css($myId, '%root% { transition: transform 0.3s; } %root%:hover { transform: translateY(-6px); }')
-```
-
-### 11. Image element format
-
-```php
-'name' => 'image',
-'settings' => [
-    'image' => ['id' => 483, 'size' => 'large'],  // WP attachment ID
-    'altText' => 'Description', '_objectFit' => 'cover',
-    '_aspectRatio' => '4/3', 'stretch' => true,
-]
-```
-
-### 12. Design system — confirmed colour palette
-
-```php
-$cream      = clr('#F5F0E8', 'clrcream',  'Cream');
-$dark       = clr('#2C1810', 'clrdark',   'Dark Espresso');
-$sage       = clr('#4A7C59', 'clrsage',   'Sage Green');
-$gold       = clr('#D4A96A', 'clrgold',   'Gold');
-$white      = clr('#FFFFFF', 'clrwhite',  'White');
-$cream_soft = clr('#E8E0D4', 'clrcrmsoft','Cream Soft');
-$dark_pill  = clr('#1A0F08', 'clrdkpill', 'Dark Pill');
-$dark_body  = clr('#4A3728', 'clrdkbody', 'Dark Body');
-```
-
-Typography: Playfair Display (headings, italic), Lato (body/labels).
-
-### 13. Button link format — MUST include `type` key
-
-```php
-// WRONG — renders <a> with NO href
-'link' => ['url' => '/contact/']
-
-// CORRECT — internal link
-'link' => ['type' => 'internal', 'postId' => 53]
-
-// CORRECT — external link
-'link' => ['type' => 'external', 'url' => 'https://booking.com/...', 'newTab' => true]
-```
-
-### 14. Running PHP scripts
-
-Standalone PHP binary lacks mysqli. Run scripts through the web server:
-```bash
-curl -sk "https://darmegdaz.local/script.php"
-```
-For scripts with self-fetch verification that may timeout, split the verification into a separate step.
-
-Additional notes:
-
-    -webkit-text-size-adjust: 100%;
-    --bricks-transition: all 0.2s;
-    --bricks-color-primary: #ffd64f;
-    --bricks-color-secondary: #fc5778;
-    --bricks-text-dark: #212121;
-    --bricks-text-medium: #616161;
-    --bricks-text-light: #9e9e9e;
-    --bricks-text-info: #00b0f4;
-    --bricks-text-success: #11b76b;
-    --bricks-text-warning: #ffa100;
-    --bricks-text-danger: #fa4362;
-    --bricks-bg-info: #e5f3ff;
-    --bricks-bg-success: #e6f6ed;
-    --bricks-bg-warning: #fff2d7;
-    --bricks-bg-danger: #ffe6ec;
-    --bricks-bg-dark: #263238;
-    --bricks-bg-light: #f5f6f7;
-    --bricks-border-color: #dddedf;
-    --bricks-border-radius: 4px;
-    --bricks-tooltip-bg: #23282d;
-    --bricks-tooltip-text: #eaecef;
-    --wp--preset--aspect-ratio--square: 1;
-    --wp--preset--aspect-ratio--4-3: 4/3;
-    --wp--preset--aspect-ratio--3-4: 3/4;
-    --wp--preset--aspect-ratio--3-2: 3/2;
-    --wp--preset--aspect-ratio--2-3: 2/3;
-    --wp--preset--aspect-ratio--16-9: 16/9;
-    --wp--preset--aspect-ratio--9-16: 9/16;
-    --wp--preset--color--black: #000000;
-    --wp--preset--color--cyan-bluish-gray: #abb8c3;
-    --wp--preset--color--white: #ffffff;
-    --wp--preset--color--pale-pink: #f78da7;
-    --wp--preset--color--vivid-red: #cf2e2e;
-    --wp--preset--color--luminous-vivid-orange: #ff6900;
-    --wp--preset--color--luminous-vivid-amber: #fcb900;
-    --wp--preset--color--light-green-cyan: #7bdcb5;
-    --wp--preset--color--vivid-green-cyan: #00d084;
-    --wp--preset--color--pale-cyan-blue: #8ed1fc;
-    --wp--preset--color--vivid-cyan-blue: #0693e3;
-    --wp--preset--color--vivid-purple: #9b51e0;
-    --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%);
-    --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);
-    --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%);
-    --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%);
-    --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);
-    --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);
-    --wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);
-    --wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);
-    --wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);
-    --wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);
-    --wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);
-    --wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);
-    --wp--preset--font-size--small: 13px;
-    --wp--preset--font-size--medium: 20px;
-    --wp--preset--font-size--large: 36px;
-    --wp--preset--font-size--x-large: 42px;
-    --wp--preset--spacing--20: 0.44rem;
-    --wp--preset--spacing--30: 0.67rem;
-    --wp--preset--spacing--40: 1rem;
-    --wp--preset--spacing--50: 1.5rem;
-    --wp--preset--spacing--60: 2.25rem;
-    --wp--preset--spacing--70: 3.38rem;
-    --wp--preset--spacing--80: 5.06rem;
-    --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
-    --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
-    --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
-    --wp--preset--shadow--outlined: 6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0);
-    --wp--preset--shadow--crisp: 6px 6px 0px rgb(0, 0, 0);
-    --bricks-color-587bf1: #f5f5f5;
-    --bricks-color-9137cc: #e0e0e0;
-    --bricks-color-a4fbf5: #9e9e9e;
-    --bricks-color-0e03e4: #616161;
-    --bricks-color-0446b3: #424242;
-    --bricks-color-5bb9f4: #212121;
-    --bricks-color-af35ec: #ffeb3b;
-    --bricks-color-32ed43: #ffc107;
-    --bricks-color-9b55a2: #ff9800;
-    --bricks-color-16da90: #ff5722;
-    --bricks-color-e66cf3: #f44336;
-    --bricks-color-7e6a67: #9c27b0;
-    --bricks-color-1cab84: #2196f3;
-    --bricks-color-ad8971: #03a9f4;
-    --bricks-color-4e4ba7: #81D4FA;
-    --bricks-color-696955: #4caf50;
-    --bricks-color-907a7b: #8bc34a;
-    --bricks-color-1647b1: #cddc39;
-    --bricks-color-rduedy: #a63e2f;
-    --bricks-color-dyuoeo: #b88b5c;
-    --bricks-color-elwmfz: #f5f1e9;
-    --bricks-color-tgyvnf: #33281f;
-    --bricks-color-whbggm: #9b6449;
-    --bricks-color-lvggho: #1e1e1e;
-    --bricks-color-jsagoy: #b88b5c;
-    --bricks-color-cqhtdq: #4a5b40;
-    --bricks-color-ocpdkh: #738665;
-    --bricks-color-luyjuj: #8a3b2a;
-    --bricks-vh: 23.66px;
-    -webkit-font-smoothing: antialiased;
-    color: #363636;
-    font-family: "IBM Plex Sans";
-    font-weight: 400;
-    font-size: 1rem;
-    line-height: 1.6;
-    box-sizing: border-box;
-    display: block;
-    flex: 1;
-    position: relative;
-    width: 100%;
-    border-color: var(--bricks-color-lvggho);
+1. **Never edit** `themes/bricks/` parent theme files
+2. **Always back up** Bricks JSON before programmatic writes (`wp_get_bricks` before `wp_update_bricks`)
+3. **Verify visually** after any Bricks element tree change — load https://darmegdaz.local and confirm
+4. **Preserve Mohamed's voice** — do not rewrite copy without explicit instruction
+5. **TranslatePress is active** — string changes may affect French translations
+6. **MCP server must be running** at localhost:3000 for any Bricks write operations
